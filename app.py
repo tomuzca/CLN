@@ -4,30 +4,40 @@ import streamlit as st
 archivo_csv = "../CLN/base.csv"
 df = pd.read_csv(archivo_csv)
 
-st.title('Canciopedia')
+st.title('Songpedia')
 
-# Entrada de usuario para el nombre de la canción
-nombre_cancion = st.text_input('Nombre de la canción:', '')
+# Text input para ingresar artistas (separados por comas)
+artistas_input = st.text_input('Ingresa artista:')
 
-# Botón para buscar y mostrar la información de la canción en el DataFrame
-if st.button('Buscar Información de la Canción'):
-    # Verificar si el usuario ingresó un nombre de canción
-    if nombre_cancion:
-        # Buscar la información correspondiente a la canción en el DataFrame
-        cancion_info = df[df['track_name'] == nombre_cancion]
+# Convertir la entrada a minúsculas y dividirla en una lista
+artistas_elegidos = [artista.strip().lower() for artista in artistas_input.split(',') if artista.strip()]
 
-        if not cancion_info.empty:
-            tono = cancion_info['key'].values[0]
-            modo = cancion_info['mode'].values[0]
-            tempo = cancion_info['tempo'].values[0]
-            año = cancion_info['track_album_release_date'].values[0]
-            artista = cancion_info['track_artist'].values[0]
+# Convertir la columna 'track_artist' a minúsculas en el DataFrame
+df['track_artist'] = df['track_artist'].str.lower()
 
-            st.success(f'Información para la canción "{nombre_cancion}":')
-            st.write(f'- Tono: {tono}')
-            st.write(f'- Modo: {modo}')
-            st.write(f'- Tempo: {tempo}')
-            st.write(f'- Año: {año}')
-            st.write(f'- Artista: {artista}')
-        else:
-            st.warning(f'No se encontró información para la canción "{nombre_cancion}".')
+# Filtrar el DataFrame por artistas seleccionados
+df_filtrado_por_artistas = df[df['track_artist'].isin(artistas_elegidos)]
+
+# Multiselect para seleccionar canciones basado en los artistas seleccionados
+canciones_elegidas = st.multiselect('Selecciona canciones:', df_filtrado_por_artistas['track_name'].str.lower().unique())
+
+# Convertir la columna 'track_name' a minúsculas en el DataFrame filtrado
+df_filtrado_por_artistas['track_name'] = df_filtrado_por_artistas['track_name'].str.lower()
+
+# Filtrar el DataFrame por canciones seleccionadas
+df_filtrado_por_canciones = df_filtrado_por_artistas[df_filtrado_por_artistas['track_name'].isin(canciones_elegidas)]
+
+# Mostrar información para las canciones seleccionadas
+for index, row in df_filtrado_por_canciones.iterrows():
+    tono = row['key']
+    modo = row['mode']
+    tempo = row['tempo']
+    año = row['track_album_release_date']
+    artista = row['track_artist']
+    cancion = row['track_name']
+
+    st.success(f'Información para la canción "{cancion}" del artista "{artista}":')
+    st.write(f'- Tono: {tono}')
+    st.write(f'- Modo: {modo}')
+    st.write(f'- Tempo: {tempo}')
+    st.write(f'- Año: {año}')
