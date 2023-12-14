@@ -5,6 +5,7 @@ archivo_csv = "../CLN/base.csv"
 df = pd.read_csv(archivo_csv)
 
 st.title('Songpedia')
+st.text("Aprende más acerca de tus canciones")
 
 # Text input para ingresar artistas (separados por comas)
 artistas_input = st.text_input('Ingresa artista:')
