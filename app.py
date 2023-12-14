@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-archivo_csv = "../CLN/spotify_songs.csv"
+archivo_csv = "../CLN/base.csv"
 df = pd.read_csv(archivo_csv)
 
 st.title('Canciopedia')
@@ -31,6 +31,3 @@ if st.button('Buscar Información de la Canción'):
             st.write(f'- Artista: {artista}')
         else:
             st.warning(f'No se encontró información para la canción "{nombre_cancion}".')
-
-# Mostrar el DataFrame actualizado
-
